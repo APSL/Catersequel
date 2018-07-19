@@ -30,7 +30,7 @@ class PostgreSQLEngine(EngineBase):
             cur.execute(query, params)
             return getattr(cur, operation)()
 
-    def execute(self, query, params):
+    def execute(self, query, params=None):
         with self._conn.cursor() as cur:
             cur.execute(query, params)
             return {
