@@ -22,10 +22,10 @@ class Catersequel:
             return params
 
         query_params = query.get_params()
-        if query_params is None:
+        if not query_params:
             return params
 
-        if params is None:
+        if not params:
             return query_params
         
         if type(query_params) != type(params):
