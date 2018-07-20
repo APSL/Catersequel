@@ -1,8 +1,6 @@
 # Catersequel
 
--- image:: https://img.shields.io/pypi/v/Catersequel.svg?style=flat-square
-	:target https://pypi.org/project/catersequel/
-	:alt Latest Version
+[![Catersequel](https://img.shields.io/pypi/v/Catersequel.svg?style=flat-square)](https://pypi.org/project/catersequel/)
 
 Catersequel is a simple API that provide helpers to manage raw SQL.
 
@@ -89,6 +87,25 @@ print(result.rowcount)  # How many rows retrieve the last query. It the engine s
 print(result.rownumber)  # Number of rows affected by the last query. If engine supports it.
 
 cater.commit()
+```
+
+## Transactions as context manager
+```python
+from catersequel import Catersequel
+from catersequel.engines.postgres import PostgreSQLEngine
+
+
+def callback_on_exception(_cater, exc_type, exc_value, traceback):
+    print(exc_type)  # <class 'psycopg2.ProgrammingError'>
+
+
+cater = Catersequel(PostgreSQLEngine(dsn="YOUR-DATABASE-DSN"))
+
+with cater.transaction(rollback_on_exc=True, callback_exc=callback_on_exception):
+    cater.execute("INSERT INTO test (name, surname) VALUES %s, %s", ("Laurence", "Fishburne"))
+
+row = cater.fetchone("SELECT * FROM test WHERE name=%s AND surname=%s", ("Laurance", "Fishburne"))
+print(row)  # None, Catersequel has perfomed a rollback due a exception.
 ```
 
 # Collaborators Wanted!

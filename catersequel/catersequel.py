@@ -1,4 +1,39 @@
+from functools import wraps
+
 from .base import Row, RowResult, Query, ExecuteResult
+
+
+class Transaction:
+    def __init__(self, catersequel, rollback_on_exc=True, callback_exc=None):
+        self._cater = catersequel
+        self._rollback_on_exc = rollback_on_exc
+        self._callback_exc = callback_exc
+
+    def __enter__(self):
+        self._cater.begin()
+        return self._cater
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        returned_value = True
+
+        if exc_type is not None and self._rollback_on_exc:
+            self._cater.rollback()
+            returned_value = False
+
+        if exc_type is not None and callable(self._callback_exc):
+            self._callback_exc(self._cater, exc_type, exc_value, traceback)
+            returned_value = True
+
+        self._cater.commit()
+        return returned_value
+
+    def __call__(self, fnx):
+        @wraps(fnx)
+        def _inner(*args, **kwargs):
+            with self:
+                fnx(*args, **kwargs)
+
+        return _inner
 
 
 class Catersequel:
@@ -94,6 +129,16 @@ class Catersequel:
     def begin(self):
         self._engine.begin()
         self._in_transaction = True
+
+    def rollback(self):
+        if self._in_transaction:
+            self._engine.rollback()
+            self._in_transaction = False
+
+    def transaction(self, rollback_on_exc=True, callback_exc=None):
+        return Transaction(
+            self, rollback_on_exc=rollback_on_exc, callback_exc=callback_exc
+        )
 
     def mogrify(self, query, params=None, fnx=None):
         sql = self._get_sql(query)
