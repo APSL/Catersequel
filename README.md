@@ -1,6 +1,6 @@
-# Catersequel
+# Catersequel [![Catersequel](https://img.shields.io/pypi/v/Catersequel.svg?style=flat-square)](https://pypi.org/project/catersequel/)
 
-[![Catersequel](https://img.shields.io/pypi/v/Catersequel.svg?style=flat-square)](https://pypi.org/project/catersequel/)
+[![caterpillar](http://etc.usf.edu/clipart/52200/52230/52230_looper_eat_lg.gif)](http://etc.usf.edu/clipart/52200/52230/52230_looper_eat_lg.gif)
 
 Catersequel is a simple API that provide helpers to manage raw SQL.
 
